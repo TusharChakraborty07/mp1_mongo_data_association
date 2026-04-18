@@ -75,14 +75,30 @@ app.get("/logout", (req, res) => {
 });
 
 // Protected Route
+// const isLoggedIn = (req, res, next) => {
+//   if (req.cookies.token === "") {
+//     res.send("You must be login first");
+//   } else {
+//     const data = jwt.verify(req.cookies.token, "SECRET_KEY");
+//     req.user = data;
+//   }
+//   next();
+// };
+
 const isLoggedIn = (req, res, next) => {
-  if (req.cookies.token === "") {
-    res.send("You must be login first");
-  } else {
-    const data = jwt.verify(req.cookies.token, "SECRET_KEY");
-    req.user = data;
+  const token = req.cookies.token;
+
+  if (!token) {
+    return res.status(401).send("You must be logged in first");
   }
-  next();
+
+  try {
+    const data = jwt.verify(token, "SECRET_KEY");
+    req.user = data;
+    next();
+  } catch (err) {
+    return res.status(401).send("Invalid token");
+  }
 };
 
 // Profile
