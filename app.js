@@ -26,7 +26,7 @@ app.post("/register", async (req, res) => {
   let { username, name, age, email, password } = req.body;
   const exitsUser = await userModel.findOne({ email });
 
-  if (exitsUser) return res.status(500).send("User already exits");
+  if (exitsUser) return res.status(500).send("User already exits!");
 
   bcrypt.genSalt(10, (err, salt) => {
     bcrypt.hash(password, salt, async (err, hash) => {
@@ -45,8 +45,50 @@ app.post("/register", async (req, res) => {
   });
 });
 
+// Login
 app.get("/login", (req, res) => {
   res.render("login");
+});
+
+app.post("/login", async (req, res) => {
+  let { email, password } = req.body;
+
+  const user = await userModel.findOne({ email });
+
+  if (!user) return res.status(500).send("User not found!");
+
+  bcrypt.compare(password, user.password, (err, result) => {
+    if (result) {
+      const token = jwt.sign({ email: email, userid: user._id }, "SECRET_KEY");
+      res.cookie("token", token);
+      res.status(200).send("Login sucessfully!");
+    } else {
+      return res.status(500).send("Password does not match!");
+    }
+  });
+});
+
+// Login
+app.get("/logout", (req, res) => {
+  res.clearCookie("token");
+  res.redirect("/login");
+});
+
+// Protected Route
+const isLoggedIn = (req, res, next) => {
+  if (req.cookies.token === "") {
+    res.send("You must be login first");
+  } else {
+    const data = jwt.verify(req.cookies.token, "SECRET_KEY");
+    req.user = data;
+  }
+  next();
+};
+
+// Profile
+app.get("/profile", isLoggedIn, (req, res) => {
+  console.log(req.user);
+  res.send(req.user);
 });
 
 app.listen(3000, () => {
