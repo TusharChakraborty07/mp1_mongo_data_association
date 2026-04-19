@@ -31,13 +31,15 @@
             </h4>
 
             <form action="/post" method="post" class="space-y-4">
-                <textarea name="content" rows="4" placeholder="Write your post..."
+
+                <textarea name="content" rows="4" placeholder="Write your post..." required minlength="1"
                     class="w-full p-3 rounded-lg bg-white/10 text-white placeholder-gray-400 border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
 
                 <button type="submit"
                     class="w-full bg-blue-600 hover:bg-blue-700 transition text-white font-semibold py-2 rounded-lg shadow-lg">
                     Post
                 </button>
+
             </form>
         </div>
 
@@ -70,11 +72,10 @@
                             </div>
 
                             <!-- content + likes -->
-                            <div class="flex items-start justify-between gap-4">
+                            <div class="flex items-start gap-4 justify-between">
 
                                 <!-- POST CONTENT -->
-                                <p
-                                    class="text-gray-200 text-sm leading-relaxed break-words whitespace-pre-wrap flex-1 text-left">
+                                <p class="text-gray-200 text-sm leading-relaxed break-words">
                                     <%= post.content %>
                                 </p>
 
@@ -103,7 +104,8 @@
                                     ✏ Edit
                                 </a>
 
-                                <a href="/deletepost/<%= post._id %>" class="text-red-400 hover:text-red-300 transition font-medium">
+                                <a href="/deletepost/<%= post._id %>"
+                                    class="text-red-400 hover:text-red-300 transition font-medium">
                                     🗑 Delete
                                 </a>
 
