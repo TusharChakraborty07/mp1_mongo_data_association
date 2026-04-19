@@ -13,11 +13,10 @@
     <!-- HEADER -->
     <div class="max-w-5xl mx-auto flex items-center justify-between mb-10">
         <h2 class="text-white text-2xl md:text-3xl font-bold">
-            Hello, <%= user.name %>
+            Hello, <%= user.username %>
         </h2>
 
-        <a href="/logout"
-            class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow-lg transition">
+        <a href="/logout" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow-lg transition">
             Logout
         </a>
     </div>
@@ -49,44 +48,62 @@
                 Your Posts
             </h4>
 
-            <!-- scroll container -->
             <div class="space-y-4 max-h-[500px] overflow-y-auto pr-2">
 
-                <% if (user.posts && user.posts.length > 0) { %>
+                <% if (user.posts && user.posts.length> 0) { %>
 
-                    <% [...user.posts].reverse().forEach((post) => { %>
+                    <% user.posts.slice().reverse().forEach((post)=> { %>
 
                         <!-- POST CARD -->
-                        <div class="p-4 rounded-xl bg-white/10 border border-white/20 text-white shadow-md hover:bg-white/15 transition">
+                        <div
+                            class="p-4 rounded-xl bg-white/10 border border-white/20 text-white shadow-md hover:bg-white/15 transition overflow-hidden">
 
                             <!-- header -->
-                            <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center justify-between mb-3">
                                 <h4 class="text-blue-300 font-semibold">
                                     <%= user.username %>
                                 </h4>
 
                                 <span class="text-xs text-gray-400">
-                                    just now
+                                    <%= new Date(post.date).toLocaleDateString() %>
                                 </span>
                             </div>
 
-                            <!-- content -->
-                            <p class="text-gray-200 text-sm leading-relaxed mb-4">
-                                <%= post.content %>
-                            </p>
+                            <!-- content + likes -->
+                            <div class="flex items-start justify-between gap-4">
+
+                                <!-- POST CONTENT -->
+                                <p
+                                    class="text-gray-200 text-sm leading-relaxed break-words whitespace-pre-wrap flex-1 text-left">
+                                    <%= post.content %>
+                                </p>
+
+                                <!-- LIKE SECTION -->
+                                <div class="flex justify-end shrink-0">
+                                    <span class="text-gray-300 text-sm whitespace-nowrap flex items-center gap-1">
+                                        👍 <%= post.likes.length %>
+                                    </span>
+                                </div>
+
+                            </div>
 
                             <!-- actions -->
                             <div class="flex justify-between text-sm border-t border-white/10 pt-3">
 
-                                <a href="#" class="text-green-400 hover:text-green-300 transition font-medium">
-                                    👍 Like
-                                </a>
+                                <a href="/like/<%= post._id %>"
+                                    class="text-green-400 hover:text-green-300 transition font-medium">
 
-                                <a href="#" class="text-yellow-400 hover:text-yellow-300 transition font-medium">
+                                    <%= post.likes.map(id=> id.toString()).includes(user._id.toString())
+                                        ? "👎 Unlike"
+                                        : "👍 Like" %>
+
+                                </a>
+                                <a href="/editpost/<%= post._id %>"
+                                    class="text-yellow-400 hover:text-yellow-300 transition font-medium">
                                     ✏ Edit
                                 </a>
 
-                                <a href="#" class="text-red-400 hover:text-red-300 transition font-medium">
+                                <a href="/deletepost/<%= post._id %>" class="text-red-400 hover:text-red-300 transition font-medium">
                                     🗑 Delete
                                 </a>
 
@@ -94,21 +111,21 @@
 
                         </div>
 
-                    <% }) %>
+                        <% }) %>
 
-                <% } else { %>
+                            <% } else { %>
 
-                    <!-- EMPTY STATE -->
-                    <div class="text-center py-10">
-                        <p class="text-gray-400 text-sm">
-                            No posts yet 🚀
-                        </p>
-                        <p class="text-gray-500 text-xs mt-1">
-                            Create your first post on the left
-                        </p>
-                    </div>
+                                <!-- EMPTY STATE -->
+                                <div class="text-center py-10">
+                                    <p class="text-gray-400 text-sm">
+                                        No posts yet 🚀
+                                    </p>
+                                    <p class="text-gray-500 text-xs mt-1">
+                                        Create your first post on the left
+                                    </p>
+                                </div>
 
-                <% } %>
+                                <% } %>
 
             </div>
         </div>

@@ -111,6 +111,41 @@ app.post("/post", isLoggedIn, async (req, res) => {
   res.redirect("/profile");
 });
 
+// Like
+app.get("/like/:id", isLoggedIn, async (req, res) => {
+  const post = await postModel.findOne({ _id: req.params.id }).populate("user");
+
+  if (post.likes.indexOf(req.user.userid) === -1) {
+    post.likes.push(req.user.userid);
+  } else {
+    post.likes.splice(post.likes.indexOf(req.user.userid), 1);
+  }
+
+  await post.save();
+  res.redirect("/profile");
+});
+
+// Edit
+app.get("/editpost/:id", isLoggedIn, async (req, res) => {
+  const post = await postModel.findOne({ _id: req.params.id }).populate("user");
+
+  res.render("editPost", { post });
+});
+
+app.post("/editpost/:id", isLoggedIn, async (req, res) => {
+  const post = await postModel.findOneAndUpdate(
+    { _id: req.params.id },
+    { content: req.body.content },
+  );
+
+  res.redirect("/profile");
+});
+
+app.get("/deletepost/:id", isLoggedIn, async (req, res) => {
+  const post = await postModel.findByIdAndDelete({ _id: req.params.id });
+
+  res.redirect("/profile");
+});
 
 // Server
 app.listen(3000, () => {
